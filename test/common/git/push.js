@@ -1,9 +1,9 @@
-'use strict'
+"use strict";
 
-const execa = require('execa')
+import { execa } from "execa";
 
-module.exports = push
-
-async function push(cwd, remote = 'origin', branch = 'main') {
-  await execa('git', ['push', '--tags', remote, `HEAD:${branch}`], {cwd: cwd})
+export async function push(cwd, remote = "origin", branch = "main") {
+  await execa("git", ["push", "--tags", remote, `HEAD:${branch}`], {
+    cwd: cwd,
+  });
 }

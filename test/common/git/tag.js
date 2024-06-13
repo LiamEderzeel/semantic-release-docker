@@ -1,13 +1,9 @@
-'use strict'
+"use strict";
 
-const execa = require('execa')
+import { execa } from "execa";
 
-module.exports = tag
+export async function tag(cwd, name, hash) {
+  const args = hash ? ["tag", "-f", name, hash] : ["tag", name];
 
-async function tag(cwd, name, hash) {
-  const args = hash
-    ? ['tag', '-f', name, hash]
-    : ['tag', name]
-
-  await execa('git', args, {cwd: cwd})
+  await execa("git", args, { cwd: cwd });
 }
