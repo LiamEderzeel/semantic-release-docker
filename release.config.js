@@ -1,7 +1,7 @@
 "use strict";
 
 /* istanbul ignore file */
-module.exports = {
+export default {
   branches: ["main"],
   extends: "@codedependant/release-config-npm",
   changelogFile: "CHANGELOG.md",

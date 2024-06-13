@@ -67,7 +67,6 @@
     ]
   },
   "devDependencies": {
-    "@semantic-release/github": "^10.0.0",
     "eslint": "^8.5.0",
     "eslint-config-codedependant": "^3.0.0",
     "semantic-release": "^24.0.0",
