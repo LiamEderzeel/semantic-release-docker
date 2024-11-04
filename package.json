@@ -3,7 +3,17 @@
   "private": false,
   "version": "5.0.3",
   "description": "docker package",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "type": "commonjs",
   "files": [
     "lib/",
     "README.md",
