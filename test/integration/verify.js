@@ -1,18 +1,18 @@
 'use strict'
 
-const crypto = require('crypto')
-const sinon = require('sinon')
-const {test, threw} = require('tap')
-
-const buildConfig = require('../../lib/build-config.js')
-const verify = require('../../lib/verify.js')
+import crypto from 'crypto'
+import sinon from 'sinon'
+import { test } from 'tap'
+import { buildConfig } from '../../lib/build-config.js'
+import { verify } from '../../lib/verify.js'
+const __dirname = import.meta.dirname
 const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000'
 
 const logger = {
   success: sinon.stub()
-, debug: sinon.stub()
-, info: sinon.stub()
-, fatal: console.error
+  , debug: sinon.stub()
+  , info: sinon.stub()
+  , fatal: console.error
 }
 
 test('steps::verify', async (t) => {
@@ -21,11 +21,11 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , GITHUB_TOKEN: ''
-      , DOCKER_REGISTRY_PASSWORD: 'abc123'
+        , GITHUB_TOKEN: ''
+        , DOCKER_REGISTRY_PASSWORD: 'abc123'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
@@ -33,10 +33,10 @@ test('steps::verify', async (t) => {
 
     await tt.rejects(
       verify(config, context)
-    , {
+      , {
         message: /docker authentication failed/i
-      , code: 'EAUTH'
-      , details: /DOCKER_REGISTRY_USER AND DOCKER_REGISTRY_PASSWORD must be set/ig
+        , code: 'EAUTH'
+        , details: /DOCKER_REGISTRY_USER AND DOCKER_REGISTRY_PASSWORD must be set/ig
       }
     )
   })
@@ -45,11 +45,11 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , GITHUB_TOKEN: ''
-      , DOCKER_REGISTRY_USER: 'abc123'
+        , GITHUB_TOKEN: ''
+        , DOCKER_REGISTRY_USER: 'abc123'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
@@ -58,10 +58,10 @@ test('steps::verify', async (t) => {
 
     tt.rejects(
       verify(config, context)
-    , {
+      , {
         message: /docker authentication failed/i
-      , code: 'EAUTH'
-      , details: /DOCKER_REGISTRY_USER AND DOCKER_REGISTRY_PASSWORD must be set/ig
+        , code: 'EAUTH'
+        , details: /DOCKER_REGISTRY_USER AND DOCKER_REGISTRY_PASSWORD must be set/ig
       }
     )
   })
@@ -70,11 +70,11 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
@@ -87,11 +87,11 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , GITHUB_TOKEN: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , GITHUB_TOKEN: 'secretsquirrel'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
@@ -103,14 +103,14 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerLogin: false
+      , dockerLogin: false
     }, context)
     tt.resolves(verify(config, context))
   })
@@ -119,19 +119,19 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_PASSWORD: 'abc123'
-      , DOCKER_REGISTRY_USER: 'abc123'
+        , DOCKER_REGISTRY_PASSWORD: 'abc123'
+        , DOCKER_REGISTRY_USER: 'abc123'
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
     const config = await buildConfig(build_id, {}, context)
     tt.rejects(
       verify(config, context)
-    , {
+      , {
         message: /docker authentication failed/i
-      , code: 'EAUTH'
-      , details: /authentication to dockerhub failed/ig
+        , code: 'EAUTH'
+        , details: /authentication to dockerhub failed/ig
       }
     )
   })
@@ -140,14 +140,14 @@ test('steps::verify', async (t) => {
     const context = {
       env: {
         ...process.env
-      , GITHUB_TOKEN: ''
+        , GITHUB_TOKEN: ''
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {}, context)
-    tt.strictEqual(await verify(config, context), true, 'auth step skipped')
+    tt.equal(await verify(config, context), true, 'auth step skipped')
   })
 
   t.test('unable to collect image name', async (tt) => {
@@ -155,8 +155,8 @@ test('steps::verify', async (t) => {
       env: {
         ...process.env
       }
-    , cwd: __dirname
-    , logger: logger
+      , cwd: __dirname
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
@@ -164,11 +164,11 @@ test('steps::verify', async (t) => {
     }, context)
     tt.rejects(verify(config, context), {
       code: 'EINVAL'
-    , name: 'SemanticReleaseError'
-    , details: new RegExp(
+      , name: 'SemanticReleaseError'
+      , details: new RegExp(
         'image name parsed from package.json name if possible. '
-          + 'or via the "dockerImage" option'
-      , 'gi'
+        + 'or via the "dockerImage" option'
+        , 'gi'
       )
     })
   })
@@ -178,20 +178,20 @@ test('steps::verify', async (t) => {
       env: {
         ...process.env
       }
-    , cwd: process.cwd()
-    , logger: logger
+      , cwd: process.cwd()
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerFile: 'Notafile'
+      , dockerFile: 'Notafile'
     }, context)
 
     await tt.rejects(verify(config, context), {
       code: 'ENOENT'
-    , name: 'SemanticReleaseError'
-    , details: /relative to pwd/gi
+      , name: 'SemanticReleaseError'
+      , details: /relative to pwd/gi
     })
   })
 
-}).catch(threw)
+})

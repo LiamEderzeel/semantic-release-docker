@@ -1,26 +1,27 @@
 'use strict'
 
-const path = require('path')
-const crypto = require('crypto')
-const execa = require('execa')
-const {test, threw} = require('tap')
-const buildConfig = require('../../lib/build-config.js')
-const verify = require('../../lib/verify.js')
-const prepare = require('../../lib/prepare.js')
+import path from 'path'
+import crypto from 'crypto'
+import { execa } from 'execa'
+import { test } from 'tap'
+import { buildConfig } from '../../lib/build-config.js'
+import { verify } from '../../lib/verify.js'
+import { dockerPrepare as prepare } from '../../lib/prepare.js'
+const __dirname = import.meta.dirname
 const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000'
 const fixturedir = path.join(__dirname, '..', 'fixture')
 const DATE_REGEX = new RegExp(
   '^[\\d]{4}-[\\d]{2}-[\\d]{2}T[\\d]{2}:[\\d]{2}:[\\d]{2}'
-    + '(\.[\\d]{1,6})?(Z|[\\+\\-][\\d]{2}:[\\d]{2})$' // eslint-disable-line no-useless-escape
+  + '(\.[\\d]{1,6})?(Z|[\\+\\-][\\d]{2}:[\\d]{2})$' // eslint-disable-line no-useless-escape
 )
 
-function noop() {}
+function noop() { }
 
 const logger = {
   success: noop
-, info: noop
-, debug: noop
-, fatal: noop
+  , info: noop
+  , debug: noop
+  , fatal: noop
 }
 
 test('steps::prepare', async (t) => {
@@ -29,39 +30,39 @@ test('steps::prepare', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , nextRelease: {
+      , cwd: fixturedir
+      , nextRelease: {
         version: '2.1.2'
-      , gitTag: 'v2.1.2'
-      , gitHead: 'abacadaba'
+        , gitTag: 'v2.1.2'
+        , gitHead: 'abacadaba'
       }
-    , logger: logger
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: 'docker-prepare'
-    , dockerImage: 'fake'
-    , dockerVerifyCmd: ['date', '+\'%x\'']
-    , dockerBuildCacheFrom: 'test'
-    , dockerArgs: {
+      , dockerProject: 'docker-prepare'
+      , dockerImage: 'fake'
+      , dockerVerifyCmd: ['date', '+\'%x\'']
+      , dockerBuildCacheFrom: 'test'
+      , dockerArgs: {
         MY_VARIABLE: '1'
-      , TAG_TEMPLATE: '{{git_tag}}'
-      , MAJOR_TEMPLATE: '{{major}}'
-      , GIT_REF: '{{git_sha}}'
-      , BUILD_DATE: '{{now}}'
+        , TAG_TEMPLATE: '{{git_tag}}'
+        , MAJOR_TEMPLATE: '{{major}}'
+        , GIT_REF: '{{git_sha}}'
+        , BUILD_DATE: '{{now}}'
       }
-    , dockerFile: 'docker/Dockerfile.prepare'
-    , dockerContext: 'docker'
-    }, {...context, dryRun: true})
+      , dockerFile: 'docker/Dockerfile.prepare'
+      , dockerContext: 'docker'
+    }, { ...context, dryRun: true })
 
     tt.match(
       await verify(config, context)
-    , /\d{2}\/\d{2}\/\d{2}/
-    , 'verify command executed'
+      , /\d{2}\/\d{2}\/\d{2}/
+      , 'verify command executed'
     )
 
     const image = await prepare(config, context)
@@ -76,9 +77,9 @@ test('steps::prepare', async (t) => {
     tt.match(image.opts.args.get('BUILD_DATE'), DATE_REGEX, 'BUILD_DATE value')
     tt.equal(image.context, path.join(context.cwd, config.context), 'docker context path')
 
-    const {stdout} = await execa('docker', [
+    const { stdout } = await execa('docker', [
       'images', image.name
-    , '-q', '--format={{ .Tag }}'
+      , '-q', '--format={{ .Tag }}'
     ])
     tt.equal(stdout, build_id, 'build image fully built')
   })
@@ -88,36 +89,36 @@ test('steps::prepare', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , nextRelease: {
+      , cwd: fixturedir
+      , nextRelease: {
         version: '2.1.2'
-      , gitTag: 'v2.1.2'
-      , gitHead: 'abacadaba'
+        , gitTag: 'v2.1.2'
+        , gitHead: 'abacadaba'
       }
-    , logger: logger
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: 'docker-prepare'
-    , dockerImage: 'alternate'
-    , dockerBuildQuiet: false
-    , dockerBuildFlags: {
+      , dockerProject: 'docker-prepare'
+      , dockerImage: 'alternate'
+      , dockerBuildQuiet: false
+      , dockerBuildFlags: {
         progress: 'plain'
-      , 'no-cache': null
+        , 'no-cache': null
       }
-    , dockerArgs: {
+      , dockerArgs: {
         MY_VARIABLE: '1'
-      , TAG_TEMPLATE: '{{git_tag}}'
-      , MAJOR_TEMPLATE: '{{major}}'
-      , GIT_REF: '{{git_sha}}'
-      , BUILD_DATE: '{{now}}'
+        , TAG_TEMPLATE: '{{git_tag}}'
+        , MAJOR_TEMPLATE: '{{major}}'
+        , GIT_REF: '{{git_sha}}'
+        , BUILD_DATE: '{{now}}'
       }
-    , dockerFile: 'docker/Dockerfile.prepare'
-    , dockerContext: 'docker'
+      , dockerFile: 'docker/Dockerfile.prepare'
+      , dockerContext: 'docker'
     }, context)
 
     const image = await prepare(config, context)
@@ -132,12 +133,12 @@ test('steps::prepare', async (t) => {
     tt.match(image.opts.args.get('BUILD_DATE'), DATE_REGEX, 'BUILD_DATE value')
     tt.equal(image.context, path.join(context.cwd, config.context), 'docker context path')
 
-    const {stdout} = await execa('docker', [
+    const { stdout } = await execa('docker', [
       'images', image.name
-    , '-q', '--format={{ .Tag }}:{{ .ID}}'
+      , '-q', '--format={{ .Tag }}:{{ .ID}}'
     ])
     const [tag, id] = stdout.split(':')
     tt.equal(image.id, id, 'captured id matches docker image id')
     tt.equal(tag, build_id, 'build image fully built')
   })
-}).catch(threw)
+})

@@ -1,8 +1,8 @@
 'use strict'
 
-const execa = require('execa')
-const {test, threw} = require('tap')
-const git = require('../common/git/index.js')
+import { execa } from 'execa'
+import { test } from 'tap'
+import * as git from '../common/git/index.js'
 const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000'
 
 const stringify = JSON.stringify
@@ -11,39 +11,39 @@ test('docker release', async (t) => {
   const cwd = t.testdir({
     'package.json': stringify({
       name: 'service-meta-package'
-    , version: '0.0.0-development'
-    , scripts: {
+      , version: '0.0.0-development'
+      , scripts: {
         'test-release': 'semantic-release'
       }
-    , release: {
+      , release: {
         ci: true
-      , npmPublish: false
-      , branches: ['main']
-      , dockerRegistry: DOCKER_REGISTRY_HOST
-      , dockerProject: 'docker-release'
-      , dockerImage: 'fake'
-      , dockerArgs: {
+        , npmPublish: false
+        , branches: ['main']
+        , dockerRegistry: DOCKER_REGISTRY_HOST
+        , dockerProject: 'docker-release'
+        , dockerImage: 'fake'
+        , dockerArgs: {
           SAMPLE_THING: '{{type}}.{{version}}'
-        , GIT_REF: '{{git_sha}}-{{git_tag}}'
-        , BUILD_DATE: '{{now}}'
+          , GIT_REF: '{{git_sha}}-{{git_tag}}'
+          , BUILD_DATE: '{{now}}'
         }
-      , plugins: [
+        , plugins: [
           '@semantic-release/commit-analyzer'
-        , '@semantic-release/release-notes-generator'
-        , '@semantic-release/npm'
-        , '@codedependant/semantic-release-docker'
+          , '@semantic-release/release-notes-generator'
+          , '@semantic-release/npm'
+          , '@codedependant/semantic-release-docker'
         ]
       }
-    , devDependencies: {
-        'semantic-release': '^19.0.0'
-      , '@semantic-release/commit-analyzer': '^9'
-      , '@semantic-release/release-notes-generator': '^10'
-      , '@semantic-release/npm': '^9'
-      , '@codedependant/semantic-release-docker': 'file:../../../'
+      , devDependencies: {
+        'semantic-release': '^24.2.0'
+        , '@semantic-release/commit-analyzer': '^9'
+        , '@semantic-release/release-notes-generator': '^10'
+        , '@semantic-release/npm': '^9'
+        , '@codedependant/semantic-release-docker': 'file:../../../'
       }
     })
-  , Dockerfile: 'FROM debian:buster-slim\n\nCMD ["whoami"]'
-  , '.gitignore': 'node_modules/'
+    , Dockerfile: 'FROM debian:buster-slim\n\nCMD ["whoami"]'
+    , '.gitignore': 'node_modules/'
   })
 
   await git.init(cwd)
@@ -60,11 +60,11 @@ test('docker release', async (t) => {
       'install'
     ], {
       cwd: cwd
-    , env: {
+      , env: {
         BRANCH_NAME: 'main'
-      , CI_BRANCH: 'main'
-      , CI: 'true'
-      , GITHUB_REF: 'refs/heads/main'
+        , CI_BRANCH: 'main'
+        , CI: 'true'
+        , GITHUB_REF: 'refs/heads/main'
       }
     })
 
@@ -74,61 +74,61 @@ test('docker release', async (t) => {
 
   const stream = execa('npm', [
     'run'
-  , 'test-release'
-  , `--repositoryUrl=${origin}`], {
+    , 'test-release'
+    , `--repositoryUrl=${origin}`], {
     cwd: cwd
-  , env: {
+    , env: {
       BRANCH_NAME: 'main'
-    , CI_BRANCH: 'main'
-    , CI: 'true'
-    , GITHUB_REF: 'refs/heads/main'
-    , DOCKER_REGISTRY_USER: 'iamweasel'
-    , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+      , CI_BRANCH: 'main'
+      , CI: 'true'
+      , GITHUB_REF: 'refs/heads/main'
+      , DOCKER_REGISTRY_USER: 'iamweasel'
+      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
     }
   })
   stream.stdout.pipe(process.stdout)
   await stream
 
-}).catch(threw)
+})
 
 test('buildx release', async (t) => {
   const cwd = t.testdir({
     'package.json': stringify({
       name: 'service-meta-package'
-    , version: '0.0.0-development'
-    , scripts: {
+      , version: '0.0.0-development'
+      , scripts: {
         'test-release': 'semantic-release --dry-run'
       }
-    , release: {
+      , release: {
         ci: true
-      , npmPublish: false
-      , branches: ['main']
-      , dockerRegistry: DOCKER_REGISTRY_HOST
-      , dockerProject: 'docker-release'
-      , dockerImage: 'fake'
-      , dockerVerifyBuild: true
-      , dockerArgs: {
+        , npmPublish: false
+        , branches: ['main']
+        , dockerRegistry: DOCKER_REGISTRY_HOST
+        , dockerProject: 'docker-release'
+        , dockerImage: 'fake'
+        , dockerVerifyBuild: true
+        , dockerArgs: {
           SAMPLE_THING: '{{type}}.{{version}}'
-        , GIT_REF: '{{git_sha}}-{{git_tag}}'
-        , BUILD_DATE: '{{now}}'
+          , GIT_REF: '{{git_sha}}-{{git_tag}}'
+          , BUILD_DATE: '{{now}}'
         }
-      , plugins: [
+        , plugins: [
           '@semantic-release/commit-analyzer'
-        , '@semantic-release/release-notes-generator'
-        , '@semantic-release/npm'
-        , '@codedependant/semantic-release-docker'
+          , '@semantic-release/release-notes-generator'
+          , '@semantic-release/npm'
+          , '@codedependant/semantic-release-docker'
         ]
       }
-    , devDependencies: {
-        'semantic-release': '^19.0.0'
-      , '@semantic-release/commit-analyzer': '^9'
-      , '@semantic-release/release-notes-generator': '^10'
-      , '@semantic-release/npm': '^9'
-      , '@codedependant/semantic-release-docker': 'file:../../../'
+      , devDependencies: {
+        'semantic-release': '^24.2.0'
+        , '@semantic-release/commit-analyzer': '^9'
+        , '@semantic-release/release-notes-generator': '^10'
+        , '@semantic-release/npm': '^9'
+        , '@codedependant/semantic-release-docker': 'file:../../../'
       }
     })
-  , Dockerfile: 'FROM debian:buster-slim\n\nCMD ["whoami"]'
-  , '.gitignore': 'node_modules/'
+    , Dockerfile: 'FROM debian:buster-slim\n\nCMD ["whoami"]'
+    , '.gitignore': 'node_modules/'
   })
 
   await git.init(cwd)
@@ -145,11 +145,11 @@ test('buildx release', async (t) => {
       'install'
     ], {
       cwd: cwd
-    , env: {
+      , env: {
         BRANCH_NAME: 'main'
-      , CI_BRANCH: 'main'
-      , CI: 'true'
-      , GITHUB_REF: 'refs/heads/main'
+        , CI_BRANCH: 'main'
+        , CI: 'true'
+        , GITHUB_REF: 'refs/heads/main'
       }
     })
 
@@ -159,19 +159,19 @@ test('buildx release', async (t) => {
 
   const stream = execa('npm', [
     'run'
-  , 'test-release'
-  , `--repositoryUrl=${origin}`], {
+    , 'test-release'
+    , `--repositoryUrl=${origin}`], {
     cwd: cwd
-  , env: {
+    , env: {
       BRANCH_NAME: 'main'
-    , CI_BRANCH: 'main'
-    , CI: 'true'
-    , GITHUB_REF: 'refs/heads/main'
-    , DOCKER_REGISTRY_USER: 'iamweasel'
-    , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+      , CI_BRANCH: 'main'
+      , CI: 'true'
+      , GITHUB_REF: 'refs/heads/main'
+      , DOCKER_REGISTRY_USER: 'iamweasel'
+      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
     }
   })
   stream.stdout.pipe(process.stdout)
   await stream
 
-}).catch(threw)
+})
