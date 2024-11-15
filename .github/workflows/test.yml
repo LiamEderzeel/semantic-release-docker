@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: |
+            compose/base.yml
+            compose/test.yml
+          up-flags: "--exit-code-from semantic-release --remove-orphans --build"

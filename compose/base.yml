@@ -9,8 +9,8 @@ services:
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
       REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
     volumes:
-      - $PWD/compose/certs:/certs
-      - $PWD/compose/auth:/auth
+      - ./certs:/certs
+      - ./auth:/auth
   docker:
     privileged: true
     image: docker:25-dind
