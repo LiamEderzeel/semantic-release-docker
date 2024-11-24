@@ -1,8 +1,10 @@
 'use strict'
 
-const path = require('path')
-const {test, threw} = require('tap')
-const readPkg = require('../../lib/read-pkg.js')
+import path from 'path'
+import { test } from 'tap'
+import { readPkg } from '../../lib/read-pkg.js'
+import { fileURLToPath } from 'url';
+const __dirname = import.meta.dirname;
 
 const fixturedir = path.join(__dirname, '..', 'fixture')
 test('read-pkg', async (t) => {
@@ -10,27 +12,27 @@ test('read-pkg', async (t) => {
     const pkg = await readPkg()
     tt.match(pkg, {
       name: '@codedependant/semantic-release-docker'
-    , version: String
+      , version: String
     })
   })
 
   t.test('reads specified directories', async (tt) => {
     const cwd = path.join(fixturedir, 'pkg', 'one')
-    const pkg = await readPkg({cwd})
+    const pkg = await readPkg({ cwd })
     tt.match(pkg, {
       name: '@fixture/one'
-    , version: '0.0.0'
-    , private: true
+      , version: '0.0.0'
+      , private: true
     })
   })
 
   t.test('throws on invalid json', async (tt) => {
     const cwd = path.join(fixturedir, 'pkg', 'two')
-    tt.rejects(readPkg({cwd}), /unexpected end of json input/ig)
+    tt.rejects(readPkg({ cwd }), /unexpected end of json input/ig)
   })
 
   t.test('throws if no package.json', async (tt) => {
     const cwd = path.join(fixturedir, 'pkg', 'three')
-    tt.rejects(readPkg({cwd}), {code: 'ENOENT'})
+    tt.rejects(readPkg({ cwd }), { code: 'ENOENT' })
   })
-}).catch(threw)
+})

@@ -1,17 +1,18 @@
 'use strict'
 
-const os = require('os')
-const crypto = require('crypto')
-const path = require('path')
-const sinon = require('sinon')
-const execa = require('execa')
-const {test, threw} = require('tap')
-const buildConfig = require('../../lib/build-config.js')
-const verify = require('../../lib/verify.js')
-const prepare = require('../../lib/prepare.js')
-const publish = require('../../lib/publish.js')
-const success = require('../../lib/success.js')
-const fail = require('../../lib/fail.js')
+import os from 'os'
+import crypto from 'crypto'
+import path from 'path'
+import sinon from 'sinon'
+import { execa } from 'execa'
+import { test } from 'tap'
+import { buildConfig } from '../../lib/build-config.js'
+import { verify } from '../../lib/verify.js'
+import { dockerPrepare as prepare } from '../../lib/prepare.js'
+import { publish } from '../../lib/publish.js'
+import { success } from '../../lib/success.js'
+import { fail } from '../../lib/fail.js'
+const __dirname = import.meta.dirname
 const fixturedir = path.join(__dirname, '..', 'fixture')
 
 const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000'
@@ -19,9 +20,9 @@ const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000
 
 const logger = {
   success: sinon.stub()
-, info: sinon.stub()
-, debug: sinon.stub()
-, fatal: sinon.stub()
+  , info: sinon.stub()
+  , debug: sinon.stub()
+  , fatal: sinon.stub()
 }
 test('post publish', async (t) => {
   t.test('success', async (t) => {
@@ -29,22 +30,22 @@ test('post publish', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , nextRelease: {version: '2.0.0'}
-    , lastRelease: {version: '1.5.0'}
-    , logger: logger
+      , cwd: fixturedir
+      , nextRelease: { version: '2.0.0' }
+      , lastRelease: { version: '1.5.0' }
+      , logger: logger
     }
 
     const opts = {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: `postpublish-${build_id}`
-    , dockerImage: 'success'
-    , dockerTags: ['{{major}}', '{{major}}.{{minor}}']
-    , dockerFile: 'docker/Dockerfile.post'
-    , dockerAutoClean: false
+      , dockerProject: `postpublish-${build_id}`
+      , dockerImage: 'success'
+      , dockerTags: ['{{major}}', '{{major}}.{{minor}}']
+      , dockerFile: 'docker/Dockerfile.post'
+      , dockerAutoClean: false
     }
 
     const config = await buildConfig(build_id, opts, context)
@@ -61,9 +62,9 @@ test('post publish', async (t) => {
     ])
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
       const tags = stdout.split(os.EOL)
 
@@ -74,35 +75,35 @@ test('post publish', async (t) => {
     await success(config, context)
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
 
       t.same(
         stdout.split(os.EOL).filter(Boolean)
-      , ['2', '2.0']
-      , 'autoClean=false does not remove local tags with')
+        , ['2', '2.0']
+        , 'autoClean=false does not remove local tags with')
     }
 
     await success(
       await buildConfig(build_id, {
         ...opts
-      , dockerAutoClean: true
+        , dockerAutoClean: true
       }, context)
-    , context
+      , context
     )
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
 
       t.same(
         stdout.split(os.EOL).filter(Boolean)
-      , []
-      , 'autoClean=true removes local tags with')
+        , []
+        , 'autoClean=true removes local tags with')
     }
   })
 
@@ -111,22 +112,22 @@ test('post publish', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , nextRelease: {version: '3.0.0'}
-    , lastRelease: {version: '2.0.0'}
-    , logger: logger
+      , cwd: fixturedir
+      , nextRelease: { version: '3.0.0' }
+      , lastRelease: { version: '2.0.0' }
+      , logger: logger
     }
 
     const opts = {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: `postpublish-${build_id}`
-    , dockerImage: 'fail'
-    , dockerTags: ['{{major}}', '{{major}}.{{minor}}']
-    , dockerFile: 'docker/Dockerfile.post'
-    , dockerAutoClean: false
+      , dockerProject: `postpublish-${build_id}`
+      , dockerImage: 'fail'
+      , dockerTags: ['{{major}}', '{{major}}.{{minor}}']
+      , dockerFile: 'docker/Dockerfile.post'
+      , dockerAutoClean: false
     }
 
     const config = await buildConfig(build_id, opts, context)
@@ -143,9 +144,9 @@ test('post publish', async (t) => {
     ])
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
       const tags = stdout.split(os.EOL)
 
@@ -156,35 +157,35 @@ test('post publish', async (t) => {
     await fail(config, context)
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
 
       t.same(
         stdout.split(os.EOL).filter(Boolean)
-      , ['3', '3.0']
-      , 'autoClean=false does not remove local tags with')
+        , ['3', '3.0']
+        , 'autoClean=false does not remove local tags with')
     }
 
     await fail(
       await buildConfig(build_id, {
         ...opts
-      , dockerAutoClean: true
+        , dockerAutoClean: true
       }, context)
-    , context
+      , context
     )
 
     {
-      const {stdout} = await execa('docker', [
+      const { stdout } = await execa('docker', [
         'images', image.repo
-      , '-q', '--format={{ .Tag }}'
+        , '-q', '--format={{ .Tag }}'
       ])
 
       t.same(
         stdout.split(os.EOL).filter(Boolean)
-      , []
-      , 'autoClean=true removes local tags with')
+        , []
+        , 'autoClean=true removes local tags with')
     }
   })
-}).catch(threw)
+})

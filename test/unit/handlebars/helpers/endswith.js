@@ -1,7 +1,7 @@
 'use strict'
 
-const {test, threw} = require('tap')
-const {endswith} = require('../../../../lib/handlebars/helpers')
+import { test } from 'tap'
+import { endswith } from '../../../../lib/handlebars/helpers/index.js'
 
 test('handlebars helpers', async (t) => {
   t.test('endswith', async (t) => {
@@ -9,4 +9,4 @@ test('handlebars helpers', async (t) => {
     t.equal(endswith('foobar', 'foo'), false, 'foobar not endswith foo')
     t.equal(endswith([], 'Array]'), false, 'false with not a string')
   })
-}).catch(threw)
+})

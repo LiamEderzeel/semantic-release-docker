@@ -1,24 +1,25 @@
 'use strict'
 
-const crypto = require('crypto')
-const path = require('path')
-const execa = require('execa')
-const {test, threw} = require('tap')
-const buildConfig = require('../../lib/build-config.js')
-const verify = require('../../lib/verify.js')
-const prepare = require('../../lib/prepare.js')
-const publish = require('../../lib/publish.js')
+import crypto from 'crypto'
+import path, { } from 'path'
+import { execa } from 'execa'
+import { test } from 'tap'
+import { buildConfig } from '../../lib/build-config.js'
+import { verify } from '../../lib/verify.js'
+import { dockerPrepare as prepare } from '../../lib/prepare.js'
+import { publish } from '../../lib/publish.js'
+const __dirname = import.meta.dirname;
 const DOCKER_REGISTRY_HOST = process.env.TEST_DOCKER_REGISTRY || 'localhost:5000'
 const fixturedir = path.join(__dirname, '..', 'fixture')
 
-function noop() {}
+function noop() { }
 
 const logger = {
   success: noop
-, info: noop
-, debug: noop
-, warn: noop
-, fatal: console.error
+  , info: noop
+  , debug: noop
+  , warn: noop
+  , fatal: console.error
 }
 
 test('steps::publish', async (t) => {
@@ -27,21 +28,21 @@ test('steps::publish', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , nextRelease: {version: '2.0.0'}
-    , lastRelease: {version: '1.5.0'}
-    , logger: logger
+      , cwd: fixturedir
+      , nextRelease: { version: '2.0.0' }
+      , lastRelease: { version: '1.5.0' }
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: 'docker-publish'
-    , dockerImage: 'real'
-    , dockerTags: ['{{previous.major}}-previous', '{{major}}-foobar', '{{version}}']
-    , dockerFile: 'docker/Dockerfile.publish'
+      , dockerProject: 'docker-publish'
+      , dockerImage: 'real'
+      , dockerTags: ['{{previous.major}}-previous', '{{major}}-foobar', '{{version}}']
+      , dockerFile: 'docker/Dockerfile.publish'
     }, context)
 
     const auth = await verify(config, context)
@@ -55,7 +56,7 @@ test('steps::publish', async (t) => {
     const tags = ['1-previous', '2-foobar', '2.0.0']
     for (const tag of tags) {
       const expected = `${image.repo}:${tag}`
-      const {stdout} = await execa('docker', ['pull', expected, '-q'])
+      const { stdout } = await execa('docker', ['pull', expected, '-q'])
       tt.equal(expected, stdout, `${expected} successfully published`)
     }
   })
@@ -65,22 +66,22 @@ test('steps::publish', async (t) => {
     const context = {
       env: {
         ...process.env
-      , DOCKER_REGISTRY_USER: 'iamweasel'
-      , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
+        , DOCKER_REGISTRY_USER: 'iamweasel'
+        , DOCKER_REGISTRY_PASSWORD: 'secretsquirrel'
       }
-    , cwd: fixturedir
-    , dockerPlatform: ['linux/amd64']
-    , nextRelease: {version: '2.0.0'}
-    , lastRelease: {version: '1.5.0'}
-    , logger: logger
+      , cwd: fixturedir
+      , dockerPlatform: ['linux/amd64']
+      , nextRelease: { version: '2.0.0' }
+      , lastRelease: { version: '1.5.0' }
+      , logger: logger
     }
 
     const config = await buildConfig(build_id, {
       dockerRegistry: DOCKER_REGISTRY_HOST
-    , dockerProject: 'docker-publish'
-    , dockerImage: 'real'
-    , dockerTags: ['{{previous.major}}-previous', '{{major}}-foobar', '{{version}}']
-    , dockerFile: 'docker/Dockerfile.publish'
+      , dockerProject: 'docker-publish'
+      , dockerImage: 'real'
+      , dockerTags: ['{{previous.major}}-previous', '{{major}}-foobar', '{{version}}']
+      , dockerFile: 'docker/Dockerfile.publish'
     }, context)
 
     const auth = await verify(config, context)
@@ -94,8 +95,8 @@ test('steps::publish', async (t) => {
     const tags = ['1-previous', '2-foobar', '2.0.0']
     for (const tag of tags) {
       const expected = `${image.repo}:${tag}`
-      const {stdout} = await execa('docker', ['pull', expected, '-q'])
+      const { stdout } = await execa('docker', ['pull', expected, '-q'])
       tt.equal(expected, stdout, `${expected} successfully published`)
     }
   })
-}).catch(threw)
+})

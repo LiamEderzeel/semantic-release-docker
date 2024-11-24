@@ -7,3 +7,6 @@ COPY ${SRC_DIR}/package.json /opt/app/
 RUN npm install
 COPY ${SRC_DIR} /opt/app
 WORkDIR /opt/app
+CMD sh .bin/test.sh
+# CMD npm run tap
+

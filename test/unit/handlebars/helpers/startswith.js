@@ -1,7 +1,7 @@
 'use strict'
 
-const {test, threw} = require('tap')
-const {startswith} = require('../../../../lib/handlebars/helpers')
+import { test } from 'tap'
+import { startswith } from '../../../../lib/handlebars/helpers/index.js'
 
 test('handlebars helpers', async (t) => {
   t.test('startswith', async (t) => {
@@ -9,4 +9,4 @@ test('handlebars helpers', async (t) => {
     t.equal(startswith('foobar', 'foo'), true, 'foobar startswith foo')
     t.equal(startswith([], 'Array]'), false, 'false with not a string')
   })
-}).catch(threw)
+})

@@ -1,4 +1,4 @@
-version: '2.4'
+version: "2.4"
 services:
   registry:
     image: registry:2
@@ -9,15 +9,12 @@ services:
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
       REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
     volumes:
-      - $PWD/compose/certs:/certs
-      - $PWD/compose/auth:/auth
+      - ./certs:/certs
+      - ./auth:/auth
   docker:
     privileged: true
     image: docker:25-dind
     environment:
-      DOCKER_TLS_CERTDIR: ''
+      DOCKER_TLS_CERTDIR: ""
       DOCKER_BUILDKIT: 1
-    command: [
-      "--insecure-registry=registry:5000"
-    ]
-
+    command: ["--insecure-registry=registry:5000"]
